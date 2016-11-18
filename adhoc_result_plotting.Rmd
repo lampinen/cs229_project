@@ -1,0 +1,64 @@
+---
+title: "adhoc_result_plotting.Rmd"
+author: "AndrewLampinen"
+date: "November 17, 2016"
+output: html_document
+---
+```{r}
+library(ggplot2)
+```
+
+Load data
+------------
+
+```{r}
+s_error = read.csv("s_final_error_AH_on_previous.csv",header=F)
+c_error = read.csv("c_final_error_AH_on_previous.csv",header=F)
+ah_op_error = read.csv("ah_final_error_AH_on_previous.csv",header=F)
+ah_dr_error = read.csv("ah_final_error_AH_data_recomb.csv",header=F)
+s_dot_track = read.csv("s_dot_track_AH_on_previous.csv",header=F)
+c_dot_track = read.csv("c_dot_track_AH_on_previous.csv",header=F)
+ah_op_dot_track = read.csv("ah_dot_track_AH_on_previous.csv",header=F)
+ah_dr_dot_track = read.csv("ah_dot_track_AH_data_recomb.csv",header=F)
+```
+
+```{r}
+ah_dr_dot_track$V1 = ah_dr_dot_track$V1/100.0
+```
+
+
+```{r}
+error_data = data.frame(condition=rep(c('No Curriculum',"Bengio's\nCurriculum",'Previous\nClassifier\nCurriculum','Data\nRecombination\nCurriculum'),each=100),final_error=c(s_error$V1,c_error$V1,ah_op_error$V1,ah_dr_error$V1))
+```
+
+```{r}
+dot_track_data = data.frame(condition=rep(c('No curriculum',"Bengio's Curr.",'Prev. Class. Curr.','Data Recomb. Curr.'),each=length(s_dot_track$V1)),dot_track=c(s_dot_track$V1,c_dot_track$V1,ah_op_dot_track$V1,ah_dr_dot_track$V1),time_step=rep(1:length(s_dot_track$V1),4))
+```
+
+
+Plot data 
+-----------
+
+```{r}
+theme_set(theme_bw(base_size=15)+theme(plot.background = element_blank(),panel.grid.major = element_blank(),panel.grid.minor = element_blank()))
+```
+
+
+```{r}
+ggplot(data=error_data,aes(condition,final_error,fill=condition))+
+  scale_fill_brewer(palette='Dark2')+
+  guides(fill=FALSE)+
+  ylab('Final test error')+
+  xlab('Curriculum') +
+  geom_violin() 
+```
+
+
+```{r}
+ggplot(data=dot_track_data,aes(time_step,dot_track,color=condition))+
+  scale_colour_brewer(palette='Dark2')+
+  ylab('dot(current weights, true weights)')+
+  xlab('Training Step') +
+  geom_line()
+```
+

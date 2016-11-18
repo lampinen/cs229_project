@@ -1,0 +1,56 @@
+\documentclass[11pt]{article}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{relsize}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{url}
+%\usepackage{breqn}
+\lstset{language=Matlab,
+    frame=single,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
+}
+%%\usepackage[margin=2cm]{geometry}
+%%\floatstyle{boxed}
+\restylefloat{figure}
+\newcommand{\Prop}{\textbf{Proposition: }}
+\newcommand{\Prob}{\textbf{Problem: }}
+\newcommand{\Prf}{\textbf{Proof: }}
+\newcommand{\Sol}{\textbf{Solution: }}
+\newcommand{\Nats}{\mathbb{N}}
+\newcommand{\Ints}{\mathbb{Z}}
+\newcommand{\Rats}{\mathbb{Q}}
+\newcommand{\Reals}{\mathbb{R}}
+\newcommand{\Comps}{\mathbb{C}}
+\newcommand{\Prb}[1]{P\left( #1 \right)}
+\newcommand{\PT}[1]{P\left( \text{#1} \right)}
+\newcommand{\PCon}[2]{P\left( #1 \mid #2 \right)}
+\newcommand{\PConT}[2]{P\left( \text{#1} \mid \text{#2} \right)}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\tr}{\textbf{tr}}
+\newcommand{\thus}{\quad\mathlarger{\mathlarger{\mathlarger{\Rightarrow}}}\quad} 
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm,nohead]{geometry}
+%%\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+\begin{document} 
+\setcounter{secnumdepth}{1}
+\title{229 Project Proposal: Generating Ad Hoc Curricula}
+\author{Andrew Lampinen (lampinen@stanford.edu)}
+\date{}
+\maketitle
+
+\section{Introduction}
+Often in machine learning, proofs of convergence of learning algorithms assume that the data distribtuion is static over the course of learning. However, work on Curriculum Learning (\url{http://ronan.collobert.com/pub/matos/2009_curriculum_icml.pdf}) has shown that in practice, altering the data distribution over the course of learning can improve results, at least in some cases. Specifically, starting with easier examples first and then progressing to harder examples can be beneficial, possibly even making a problem that's unlearnable in practice learnable. This idea has proven useful in many more recent neural network results, e.g. \url{http://www.nature.com/nature/journal/vaop/ncurrent/full/nature20101.html}.\par
+However, in many cases we lack explicit knowledge about the structure of the problem from which we can construct a curriculum. For example, on the MNIST task, how do we decide which examples are ``easy'' or ``hard?'' Perhaps we could have human coders evaluate every image and call an image harder the more they disagree, but that would be prohibitively expensive. Is there a way we can craft curricula for a task while remaining more agnostic to what the task actually is (ideally just from the data vectors and labels)?
+\section{Proposal}
+We propose to investigate crafting curricula in this way. It seems that there are several approaches that could potentially be useful, and probably more we have not thought of: 
+\begin{enumerate}
+\item \textbf{Data recombination and central tendencies:} Intuitively, we might think that by combining/averaging data points with the same labels, we will generally yield better estimates of the central tendency of the data distribution for this class, which may provide a better place to begin learning. For example, on MNIST the average of all the 0 examples is probably more 0 like than many of the individual examples. Thus, beginning with averaged data may be like beginning with ``easier'' examples. 
+\item \textbf{Classifier confusion:} Suppose we train an ensemble of classifierson the unordered dataset, and see which training examples they most disagree on at the end. Then we can order the training data so that these examples come last. (This can be seen as sort of the cheap analog of having humans code the data.) This might result in better results. (This strategy bears some resemblance to various active learning strategies, but here we are crafting a curriculum for training a new classifier rather than choosing next examples for our current ensemble.)
+\end{enumerate}
+We propose to investigate the first of these ideas, and move on to the second if the first doesn't work. Specifically, we will begin with the toy example of the Perceptron learning a linear classifier given in the paper by Bengio and colleagues above, and then move on to trying the strategies we develop there on MNIST classification using a simple convolutional neural network.\par
+We believe this is a fairly ambitious proposal and might fail horribly, but we think it is interesting and has the potential to be useful if it is successful. Feedback and suggestions are most welcome.
+\end{document}
